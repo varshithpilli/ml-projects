@@ -8,11 +8,11 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 
 def inverse_gauss_jordan(A):
-    A = A.astype(float)
+    A = A.astype(float)                        # Convert to float (decimal)
     n = A.shape[0]                             # No. of rows in A
     
     I = np.eye(n)                              # n * n identity matrix
-    aug = np.hstack((A, I))                    # Horizontal stack A & I
+    aug = np.hstack((A, I))                    # Horizontal stack (A & I) => [A|I]
 
     for i in range(n):
         # Ensure the pivot is non-zero. If it's zero, find a non-zero element and swap rows.
@@ -24,7 +24,7 @@ def inverse_gauss_jordan(A):
             else:
                 raise ValueError("Matrix is singular and cannot be inverted.")
         
-        # Make the diagonal element = 1
+        # Make the diagonal element = 1 (for RREF)
         aug[i] = aug[i] / aug[i, i]
         
         # Normalise other rows using standard row operations
@@ -32,7 +32,7 @@ def inverse_gauss_jordan(A):
             if j != i:
                 aug[j] -= aug[j, i] * aug[i]
 
-    # Extract the inverse matrix from the augmented matrix
+    # Get the inverse matrix from the augmented matrix
     A_inv = aug[:, n:]
     return A_inv
 
@@ -50,7 +50,6 @@ class LinearRegression:
         XT_y = np.dot(X_b.T, y)
         
         XT_X_inv = inverse_gauss_jordan(XT_X)
-        
         
         self.weights = np.dot(XT_X_inv, XT_y)
 
