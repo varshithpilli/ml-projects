@@ -157,7 +157,7 @@ def main():
     print_flush("\n4. Model Performance Comparison:")
     
     def adjusted_r2(r2, n, p):
-        return 1 - (1 - r2) * (n - 1) / (n - p - 1)
+        return 1 - (((1 - r2) * (n - 1)) / (n - p - 1))
     
     metrics["scratch"] = calculate_metrics(y_test, predictions["scratch_test"])
     metrics["scratch"]["adj_r2"] = adjusted_r2(metrics["scratch"]["r2"], len(y_test), X_test.shape[1])
