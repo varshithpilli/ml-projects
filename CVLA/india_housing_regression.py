@@ -45,7 +45,7 @@ class LinearRegression:
     def fit(self, X, y):
         X_b = np.c_[np.ones((X.shape[0], 1)), X]
         
-        # θ = (X^T X)^(-1) X^T y
+        # θ = (X^T*X)^(-1)*X^T*y
         XT_X = np.dot(X_b.T, X_b)
         XT_y = np.dot(X_b.T, y)
         
