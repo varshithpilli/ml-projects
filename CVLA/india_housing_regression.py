@@ -7,7 +7,37 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 
-class LinearRegressionFromScratch:
+def inverse_gauss_jordan(A):
+    A = A.astype(float)
+    n = A.shape[0]                             # No. of rows in A
+    
+    I = np.eye(n)                              # n * n identity matrix
+    aug = np.hstack((A, I))                    # Horizontal stack A & I
+
+    for i in range(n):
+        # Ensure the pivot is non-zero. If it's zero, find a non-zero element and swap rows.
+        if aug[i, i] == 0:
+            for j in range(i + 1, n):
+                if aug[j, i] != 0:
+                    aug[[i, j]] = aug[[j, i]]
+                    break
+            else:
+                raise ValueError("Matrix is singular and cannot be inverted.")
+        
+        # Make the diagonal element = 1
+        aug[i] = aug[i] / aug[i, i]
+        
+        # Normalise other rows using standard row operations
+        for j in range(n):
+            if j != i:
+                aug[j] -= aug[j, i] * aug[i]
+
+    # Extract the inverse matrix from the augmented matrix
+    A_inv = aug[:, n:]
+    return A_inv
+
+
+class LinearRegression:
     def __init__(self):
         self.weights = None
         self.intercept = None
@@ -19,11 +49,8 @@ class LinearRegressionFromScratch:
         XT_X = np.dot(X_b.T, X_b)
         XT_y = np.dot(X_b.T, y)
         
-        try:
-            XT_X_inv = np.linalg.inv(XT_X)
-        except np.linalg.LinAlgError:
-            # Pseudo-inverse
-            XT_X_inv = np.linalg.pinv(XT_X)
+        XT_X_inv = inverse_gauss_jordan(XT_X)
+        
         
         self.weights = np.dot(XT_X_inv, XT_y)
 
@@ -100,7 +127,7 @@ def main():
     metrics = {}
     
     print_flush("\n   3.1 Training custom linear regression model ...")
-    scratch_model = LinearRegressionFromScratch()
+    scratch_model = LinearRegression()
     scratch_model.fit(X_train, y_train)
     models["scratch"] = scratch_model
     predictions["scratch_train"] = scratch_model.predict(X_train)
